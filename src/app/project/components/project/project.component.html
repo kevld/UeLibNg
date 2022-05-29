@@ -1,0 +1,91 @@
+<div class="container-fluid" id="project-home">
+  <div class="row">
+    <div class="col-12">
+      <div id="project-component">
+        <div class="row">
+          <div class="col-12">
+            <div class="card">
+              <div class="card-header">
+                <span>
+                  <h3>Projects <button class="btn btn-primary float-right" (click)="createDraftProject()"
+                      [disabled]="lockAddButton$ | async"><i class="bi bi-plus"></i></button></h3>
+                </span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="row">
+          <div class="col-md-4">
+            <div class="card">
+              <ul ngbNav #nav="ngbNav" [(activeId)]="active" class="nav-pills" orientation="vertical">
+                <li *ngFor="let project of projects$ | async; let i = index" [ngbNavItem]="i">
+                  <a ngbNavLink (click)="loadAssets(project.id); changeActiveProject(project.id);">{{ project.name
+                    }}</a>
+                  <ng-template ngbNavContent>
+                    <h6>Description : </h6>
+                    {{ project.description }}
+                  </ng-template>
+                </li>
+                <li [ngbNavItem]="'draftProject'" *ngIf="openDraftTab$ | async">
+                  <a ngbNavLink>Add a project</a>
+                  <ng-template ngbNavContent>
+                    <form [formGroup]="projectForm" (ngSubmit)="onSubmit()">
+                      <div class="form-group">
+                        <label for="title">Title</label>
+                        <input type="text" class="form-control" id="title" formControlName="title"
+                          placeholder="My project title...">
+                      </div>
+                      <div class="form-group">
+                        <label for="description">Description</label>
+                        <textarea class="form-control" id="description" formControlName="description"
+                          placeholder="My project description..."></textarea>
+                      </div>
+
+                      <div class="form-group">
+                        <button type="submit" class="btn btn-secondary">Save</button>
+                      </div>
+                    </form>
+                  </ng-template>
+                </li>
+              </ul>
+            </div>
+
+          </div>
+          <div class="col-md-8">
+            <div class="card">
+              <div class="card-header" [ngbNavOutlet]="nav"></div>
+              <div class="card-body">
+                <h3>List of used assets</h3>
+              </div>
+              <div class="card-footer">
+                <table class="table table-striped">
+                  <thead>
+                    <tr>
+                      <th scope="col">Name</th>
+                      <th scope="col">Rank</th>
+                      <th><i class="bi bi-trash"></i></th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr *ngFor="let rankedAsset of rankedAssetsForProject$ | async">
+                      <td>{{ rankedAsset.assetName }}</td>
+                      <td>
+                        <ngb-rating [(rate)]="rankedAsset.rank"
+                          (rateChange)="addRankedAssetToProject(rankedAsset.assetId, rankedAsset.rank)"></ngb-rating>
+                      </td>
+                      <td>
+                        <button class="btn btn-danger" [ngClass]="{'disabled': rankedAsset.rank == 0}"
+                          (click)="removeRankedAssetFromProject(rankedAsset.id)"><i class="bi bi-trash"></i></button>
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

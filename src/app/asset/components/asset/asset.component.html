@@ -1,0 +1,102 @@
+<div class="container-fluid" id="asset-home">
+    <div class="row">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header">
+                    <h3>Assets
+                        <button class="float-right btn btn-primary"
+                            (click)="openAssetForm()" [disabled]="isAddingAsset$ | async">
+                            <i class="bi bi-plus-circle float-right"></i>
+                        </button>
+                    </h3>
+                </div>
+                <div class="card-body" *ngIf="isAddingAsset$ | async">
+
+                    <form class="row" [formGroup]="form" (ngSubmit)="onSubmit()"
+                        (keydown.enter)="$event.preventDefault()">
+                        <div class="form-group col-md-4">
+                            <label for="title">Name</label>
+                            <input type="text" class="form-control" id="name" formControlName="name"
+                                placeholder="Asset name...">
+                        </div>
+                        <div class="form-group col-md-4">
+                            <label for="description">Description</label>
+                            <input type="text" class="form-control" id="description" formControlName="description"
+                                placeholder="Asset description...">
+                        </div>
+                        <div class="form-group col-md-4">
+                            <label for="url">Url</label>
+                            <input type="text" class="form-control" id="url" formControlName="url"
+                                placeholder="Asset url...">
+                        </div>
+                        <div class="form-group col-md-4">
+                            <label for="url">Asset type</label>
+                            <select class="form-control form-select" aria-label="Asset type"
+                                formControlName="assetType">
+                                <option *ngFor="let option of assetTypes" [ngValue]="option.key">{{ option.value }}
+                                </option>
+                            </select>
+                        </div>
+                        <div class="form-group col-md-4">
+                            <label for="url">Min version</label>
+                            <input type="text" class="form-control" id="min-version" formControlName="minVersion"
+                                placeholder="Min UE version...">
+                        </div>
+                        <div class="form-group col-md-4">
+                            <label for="url">Max version</label>
+                            <input type="text" class="form-control" id="max-version" formControlName="maxVersion"
+                                placeholder="Max UE version...">
+                        </div>
+                        <div class="form-group col-md-4">
+                            <label for="tags">Tags</label>
+                            <input id="tags" type="text" class="form-control tag-input" formControlName="tagInput" #tagInput
+                                (selectItem)="addExistingTag(tagInput)" (keydown.enter)="addNewTag()"
+                                [ngbTypeahead]="search" [resultFormatter]="formatter"
+                                placeholder='Type a tag, then "Enter" to valid' />
+                        </div>
+                        <div class="form-group col-md-8">
+                            <label for="tags">Added tags</label> <br />
+                            <app-tag *ngFor="let tag of addedTags$ | async" [tag]="tag"
+                                (deleteEvent)="removeTagFromAsset(tag)"></app-tag>
+                        </div>
+                        <div class="form-group col-md-6">
+                            <input type="submit" class="form-control btn-success" value="Save" />
+                        </div>
+                        <div class="form-group col-md-6">
+                            <input type="button" class="form-control btn-danger" value="Cancel"
+                                (click)="cancelAssetForm()" />
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="row" style="margin-top: 16px;">
+        <div class="col-12">
+            <table class="table table-striped">
+                <thead>
+                    <tr>
+                        <th scope="col">#</th>
+                        <th scope="col">Name</th>
+                        <th scope="col">Type</th>
+                        <th scope="col">Tags</th>
+                        <th scope="col">Delete</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr *ngFor="let asset of assets$ | async">
+                        <th scope="row">{{ asset.id }}</th>
+                        <td>{{ asset.name }}</td>
+                        <td>{{ getAssetType(asset.assetType) }}</td>
+                        <td>
+                            <span *ngFor="let tag of asset.tags" class="badge bg-primary badge-asset">{{ tag.name }}</span>
+                        </td>
+                        <td><button class="btn btn-primary" (click)="removeAsset(asset.id)"><i class="bi bi-trash"></i></button></td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+</div>
+
